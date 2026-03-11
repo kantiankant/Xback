@@ -97,8 +97,8 @@ static void blit(Image *src, unsigned char *dst, int dx, int dy, int dw, int dh,
     }
 }
 static void scale_to(Image *src, unsigned char *dst, int ox, int oy, int tw, int th,
-                     int canw, int mode) {
-    if (mode == MODE_STRETCH) { blit(src, dst, ox, oy, tw, th, canw, th); return; }
+                     int canw, int canh, int mode) {
+    if (mode == MODE_STRETCH) { blit(src, dst, ox, oy, tw, th, canw, canh); return; }
     float sr = (float)src->w / src->h, tr = (float)tw / th;
     int sw, sh, bx = ox, by = oy;
     if (mode == MODE_FILL) {
@@ -108,7 +108,7 @@ static void scale_to(Image *src, unsigned char *dst, int ox, int oy, int tw, int
         if (sr > tr) { sw = tw; sh = (int)(sw / sr); by = oy + (th - sh) / 2; }
         else         { sh = th; sw = (int)(sh * sr); bx = ox + (tw - sw) / 2; }
     }
-    blit(src, dst, bx, by, sw, sh, canw, th);
+    blit(src, dst, bx, by, sw, sh, canw, canh);
 }
 int main(int argc, char **argv) {
     if (argc < 3) {
@@ -163,7 +163,7 @@ int main(int argc, char **argv) {
     if (!img.px) { XCloseDisplay(dpy); return 1; }
     fprintf(stderr, "xback: loaded %dx%d\n", img.w, img.h);
     unsigned char *canvas = calloc(sw * sh, 4);
-    scale_to(&img, canvas, ox, oy, mw, mh, sw, mode);
+    scale_to(&img, canvas, ox, oy, mw, mh, sw, sh, mode);
     free(img.px);
     int depth = DefaultDepth(dpy, DefaultScreen(dpy));
     Visual *vis = DefaultVisual(dpy, DefaultScreen(dpy));
